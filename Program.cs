@@ -34,17 +34,14 @@ namespace Machine_List_CSharp
                 string UserResponse = Console.ReadLine();
                 if (UserResponse == "S" || UserResponse == "s")
                 {
-                    First_Choice_Loop = false;
                     Show_Computers();
                 }
                 else if (UserResponse == "I" || UserResponse == "i")
                 {
-                    First_Choice_Loop = false;
                     Insert_Computers();
                 }
                 else if (UserResponse == "U" || UserResponse == "u")
                 {
-                    First_Choice_Loop = false;
                     Update_Computers();
                 }
                 else if (UserResponse == "quit" || UserResponse == "Quit" || UserResponse == "q" || UserResponse == "Q")
@@ -92,7 +89,7 @@ namespace Machine_List_CSharp
             using var cmd = new SQLiteCommand(con);
             cmd.CommandText = "SELECT * FROM Computers";
             cmd.ExecuteScalar().ToString();
-            using SQLiteDataReader rdr = cmd.ExecuteReader();
+            //using SQLiteDataReader rdr = cmd.ExecuteReader();
 
             bool LoopCheck = false;
             bool LoopPass = false;
@@ -140,86 +137,144 @@ namespace Machine_List_CSharp
 
         static void Update_Computers()
         {
-            sql sql = new sql();
-            using var con = new SQLiteConnection(sql.Database);
-            //Opens connection to database
-            con.Open();
-            
-            //Runs SQL command
-            using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = "SELECT * FROM Computers";
-            cmd.ExecuteScalar().ToString();
-            using SQLiteDataReader rdr = cmd.ExecuteReader();
-
-
-            //SQL Output
-            Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
-            Console.WriteLine(string.Format("| {0,-5} | {1,-24} | {2,-25} | {3,-45} |", "Row ID", "Computer Name", "Assigned To", "Additional Information"));
-            Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
-            while (rdr.Read())
+            bool UpdateComputersLoop = true;
+            while (UpdateComputersLoop == true)
             {
-                Console.WriteLine(string.Format("| {0,-6} | {1,-24} | {2,-25} | {3,-45} |", $"ID: {rdr.GetInt32(0)}", $"{rdr.GetString(1)}", $"{rdr.GetString(2)}", $"{rdr.GetString(3)}"));
-            }
-            Console.WriteLine("-----------------------------------------------------------------------------------------------------------------\n");
-            rdr.Close();
-            ////////////////////
+                sql sql = new sql();
+                using var con = new SQLiteConnection(sql.Database);
+                //Opens connection to database
+                con.Open();
+                
+                //Runs SQL command
+                using var cmd = new SQLiteCommand(con);
+                cmd.CommandText = "SELECT * FROM Computers";
+                cmd.ExecuteScalar().ToString();
+                using SQLiteDataReader rdr = cmd.ExecuteReader();
 
-            Console.WriteLine("Which row ID would you like to update? (Only type the row ID number)");
-            String Update_Id_Response = Console.ReadLine();
-            
-            cmd.CommandText = "SELECT * FROM Computers WHERE Table_ID = @ID";
-            cmd.Parameters.AddWithValue("@ID", Update_Id_Response);
-            cmd.ExecuteScalar().ToString();
-            //I could have useds MARS but people suggested against this. So I am just closing and opening a new reader.
-            using SQLiteDataReader rdr2 = cmd.ExecuteReader();
 
-            //SQL Output
-            Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
-            Console.WriteLine(string.Format("| {0,-5} | {1,-24} | {2,-25} | {3,-45} |", "Row ID", "Computer Name", "Assigned To", "Additional Information"));
-            Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
-            while (rdr2.Read())
-            {
-                Console.WriteLine(string.Format("| {0,-6} | {1,-24} | {2,-25} | {3,-45} |", $"ID: {rdr2.GetInt32(0)}", $"{rdr2.GetString(1)}", $"{rdr2.GetString(2)}", $"{rdr2.GetString(3)}"));
-            }
-            Console.WriteLine("-----------------------------------------------------------------------------------------------------------------\n");
-            rdr2.Close();
-            ////////////////////
-
-            Console.WriteLine("Which column do you wish to update? [1-3]");
-            Console.WriteLine("1 - Computer Name");
-            Console.WriteLine("2 - Assigned To");
-            Console.WriteLine("3 - Additional Information");
-            bool Update_Loop_Check = true;
-            while (Update_Loop_Check == true)
-            {
-                String Update_Table_Choice = Console.ReadLine();
-
-                if (Update_Table_Choice == "1")
+                //SQL Output
+                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine(string.Format("| {0,-5} | {1,-24} | {2,-25} | {3,-45} |", "Row ID", "Computer Name", "Assigned To", "Additional Information"));
+                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+                while (rdr.Read())
                 {
-                    Update_Loop_Check = false;
-                }            
-                else if (Update_Table_Choice == "2")
-                {
-                    Update_Loop_Check = false;
+                    Console.WriteLine(string.Format("| {0,-6} | {1,-24} | {2,-25} | {3,-45} |", $"ID: {rdr.GetInt32(0)}", $"{rdr.GetString(1)}", $"{rdr.GetString(2)}", $"{rdr.GetString(3)}"));
                 }
-                else if (Update_Table_Choice == "3")
+                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------\n");
+                rdr.Close();
+                ////////////////////
+
+                Console.WriteLine("Which row ID would you like to update? (Only type the row ID number)");
+                String Update_Id_Response = Console.ReadLine();
+                
+                cmd.CommandText = "SELECT * FROM Computers WHERE Table_ID = @ID";
+                cmd.Parameters.AddWithValue("@ID", Update_Id_Response);
+                cmd.ExecuteScalar().ToString();
+                //I could have useds MARS but people suggested against this. So I am just closing and opening a new reader.
+                using SQLiteDataReader rdr2 = cmd.ExecuteReader();
+
+                //SQL Output
+                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine(string.Format("| {0,-5} | {1,-24} | {2,-25} | {3,-45} |", "Row ID", "Computer Name", "Assigned To", "Additional Information"));
+                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+                while (rdr2.Read())
                 {
-                    Update_Loop_Check = false;
+                    Console.WriteLine(string.Format("| {0,-6} | {1,-24} | {2,-25} | {3,-45} |", $"ID: {rdr2.GetInt32(0)}", $"{rdr2.GetString(1)}", $"{rdr2.GetString(2)}", $"{rdr2.GetString(3)}"));
                 }
-                else
+                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------\n");
+                rdr2.Close();
+                ////////////////////
+
+                
+                
+                bool Update_Loop_Check = true;
+                while (Update_Loop_Check == true)
                 {
-                    Console.WriteLine("You can only use one of the following below.");
+                    Console.WriteLine("Which column do you wish to update? [1-6]");
                     Console.WriteLine("1 - Computer Name");
                     Console.WriteLine("2 - Assigned To");
                     Console.WriteLine("3 - Additional Information");
-                    Console.WriteLine("Which column do you wish to update? [1-3]");
-                }
-            }
-            
-            //cmd.CommandText =  "UPDATE Computers SET (Computer_Name, Assigned_To, Additional_Info) VALUES(@Computer, @Assign, @Info) WHERE Table_ID = @ID";
-            //cmd.Parameters.AddWithValue("@ID", Alter_Id_Response)
+                    Console.WriteLine("4 - Exit category");
+                    Console.WriteLine("5 - Allows you to deletes the selected row");
+                    Console.WriteLine("0 - Close program");
+                    String Update_Table_Choice = Console.ReadLine();
 
-            con.Close();
+                    if (Update_Table_Choice == "1")
+                    {
+                        Console.WriteLine("Write the new computer name below.");
+                        String ComputerName = Console.ReadLine();
+                        cmd.CommandText = "UPDATE Computers SET Computer_Name = @ComputerName WHERE Table_ID = @ID";
+                        cmd.Parameters.AddWithValue("@ComputerName", ComputerName);
+                        cmd.Parameters.AddWithValue("@ID", Update_Id_Response);
+                        cmd.Prepare();
+                        cmd.ExecuteNonQuery();
+
+                        Console.WriteLine("Updated the table entry");
+                    }            
+                    else if (Update_Table_Choice == "2")
+                    {
+                        Console.WriteLine("Write the name of the new Assigned person below.");
+                        String AssignedName = Console.ReadLine();
+                        cmd.CommandText = "UPDATE Computers SET Assigned_To = @AssignedName WHERE Table_ID = @ID";
+                        cmd.Parameters.AddWithValue("@AssignedName", AssignedName);
+                        cmd.Parameters.AddWithValue("@ID", Update_Id_Response);
+                        cmd.Prepare();
+                        cmd.ExecuteNonQuery();
+
+                        Console.WriteLine("Updated the table entry");
+                    }
+                    else if (Update_Table_Choice == "3")
+                    {
+                        Console.WriteLine("Write new additional information below.");
+                        String Additional_Info = Console.ReadLine();
+                        cmd.CommandText = "UPDATE Computers SET Additional_Info = @Additional_Info WHERE Table_ID = @ID";
+                        cmd.Parameters.AddWithValue("@Additional_Info", Additional_Info);
+                        cmd.Parameters.AddWithValue("@ID", Update_Id_Response);
+                        cmd.Prepare();
+                        cmd.ExecuteNonQuery();
+
+                        Console.WriteLine("Updated the table entry");
+                    }
+                    else if (Update_Table_Choice == "4")
+                    {
+                        Update_Loop_Check = false;
+                    }
+                    else if (Update_Table_Choice == "0")
+                    {
+                        Update_Loop_Check = false;
+                        UpdateComputersLoop = false;
+                    }
+                    else if (Update_Table_Choice == "5")
+                    {
+                        Console.WriteLine("Type CONFIRM DELETE below to delete the selected row above");
+                        String ConfirmDelete = Console.ReadLine();
+                        if (ConfirmDelete == "CONFIRM DELETE")
+                        {
+                            cmd.CommandText = "DELETE FROM Computers WHERE Table_ID = @ID";
+                            cmd.Parameters.AddWithValue("@ID", Update_Id_Response);
+                            cmd.Prepare();
+                            cmd.ExecuteNonQuery();
+                            Console.WriteLine("Row deleted");
+                            Update_Loop_Check = false;
+                            UpdateComputersLoop = false;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("You can only use one of the following below.");
+                        Console.WriteLine("1 - Computer Name");
+                        Console.WriteLine("2 - Assigned To");
+                        Console.WriteLine("3 - Additional Information");
+                        Console.WriteLine("4 - Exit category");
+                        Console.WriteLine("5 - Allows you to deletes the selected row");
+                        Console.WriteLine("0 - Close program");
+                        Console.WriteLine("Which column do you wish to update? [1-5]");
+                    }
+                }
+
+                con.Close();
+            }
+
         }
     }
 }
